@@ -4,7 +4,7 @@ require 'optparse'
 require 'pry'
 
 DEFAULT_SAMPLE_SIZE = 3
-LINES_PER_CONTAINER = 3
+LINES_PER_CONTAINER = 2
 LXC_CONTAINER_COPYING_TAG = 'copying'
 
 
@@ -33,6 +33,8 @@ def poll_lxc_list
   container_count = 1 if container_count == 0
 
   @sample_size = container_count * LINES_PER_CONTAINER
+
+  containers.count > 0
 end
 
 def generate_command
@@ -41,18 +43,20 @@ def generate_command
 
     "timeout -k #{timeout*2} #{timeout} #{COMMAND % @sample_size}"
   else
-    COMMAND % sample_size
+    COMMAND % @sample_size
   end
 end
 
-def uniq input
-  containers = @containers.collect{ |container| [container, 'Done.']}.to_h
+def uniq input, raw=false
+  containers = @containers.collect{ |container| [container, '']}.to_h
   input = input.split("\n")
   input.each do |line|
     (container, text) = line.split(': ')
     container = container.gsub '-' + LXC_CONTAINER_COPYING_TAG, ''
     containers[container] = text
   end
+
+  return containers if raw
   containers.collect{|k,v| k + ":\t" + v}.sort.join "\n"
 end
 
@@ -60,7 +64,7 @@ def tableize input
   max_column_length = 0
   column_max_lengths = []
   lines = input.split("\n")
-  columns = lines.first.count("\t") + 1
+  columns = lines.first&.count("\t").to_i + 1
 
   lines.each do |line|
     line_columns = line.split("\t")
@@ -94,15 +98,22 @@ if @config[:poll]
   last_result = nil
   result = nil
 
-  while result != ""
-    poll_lxc_list
-    last_result = result
-    result = uniq `#{generate_command}`
+  # Initalize results hash
+  results = {}
+  fails = {}
 
-    if result != ""
-      system 'clear'
-      puts tableize result
-    end
+  while poll_lxc_list
+    last_result = result
+
+    # Update results
+    result = uniq(`#{generate_command}`, true)
+    result.each {|k,v| results[k] = v unless v.nil? || v == ""}
+    result.each {|k,v| fails[k] = (fails[k] || 0) + 1 if v.nil? || v == ""}
+
+    system 'clear'
+    puts tableize results.collect{|k,v| k + ":\t" + v}.sort.join("\n")
+    # puts result.to_s
+    # puts fails.to_s
   end
 
   abort("No active copy detected.") if last_result.nil?
