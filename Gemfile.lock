@@ -1,0 +1,28 @@
+GIT
+  remote: git://github.com/lxc/ruby-lxc.git
+  revision: e4f78ad7f8c8013ffba3f4276bb9a33b10cc3800
+  specs:
+    ruby-lxc (1.2.2)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    coderay (1.1.1)
+    method_source (0.8.2)
+    pry (0.10.4)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    ruby-progressbar (1.8.1)
+    slop (3.6.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pry
+  ruby-lxc!
+  ruby-progressbar
+
+BUNDLED WITH
+   1.13.7
