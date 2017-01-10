@@ -114,7 +114,7 @@ begin
   # Step 8: Delete backup snapshot
   system_p "lxc delete #{BACKUP_CONTAINER_NAME}", false
 
-  @log.info('Completed Successfully')
+  @log.info("Backup #{LXC_REMOTE}:#{CONTAINER_NAME} Completed Successfully")
 
 rescue Exception => e
   @log.error("Error backing up #{LXC_REMOTE}:#{CONTAINER_NAME}")
