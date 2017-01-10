@@ -114,8 +114,8 @@ if @config[:poll]
 
     system 'clear'
     puts tableize results.collect{|k,v| k + ":\t" + v}.sort.join("\n")
-    # puts result.to_s
-    # puts fails.to_s
+    puts result.to_s
+    puts fails.to_s
   end
 
   abort("No active copy detected.") if last_result.nil?

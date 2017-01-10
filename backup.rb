@@ -57,10 +57,10 @@ def system_p command, fatal=true
 
   if !success
     if !fatal
-      @log.warn("Error executing command '#{command}'")
-      @log.warn("#{stdout}") if stdout.strip != ""
-      @log.warn("#{result}")
-      @log.warn("#{stdeerr}") if stdeerr.strip != ""
+      @log.info("Non-fatal error executing command '#{command}'")
+      @log.info("#{stdout}") if stdout.strip != ""
+      @log.info("#{result}")
+      @log.info("#{stdeerr}") if stdeerr.strip != ""
     else
       @log.error("Error executing command '#{command}'")
       @log.error("#{stdout}") if stdout.strip != ""
