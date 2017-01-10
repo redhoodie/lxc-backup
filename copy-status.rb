@@ -3,6 +3,8 @@
 require 'optparse'
 require 'pry'
 
+# TODO: Rewrite with a process listening to `lxc monitor` and updating variables internally.
+
 DEFAULT_SAMPLE_SIZE = 3
 LINES_PER_CONTAINER = 2
 LXC_CONTAINER_COPYING_TAG = 'copying'

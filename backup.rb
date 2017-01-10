@@ -5,8 +5,8 @@ require 'open3'
 require 'logger'
 require 'pry'
 
-log = Logger.new('lxc-backup.log', 3, 1024000)
-log.level = Logger::INFO
+@log = Logger.new('/var/log/lxc-backup.log', 3, 1024000)
+@log.level = Logger::INFO
 
 config = {:name => nil, :remote => nil}
 
@@ -14,9 +14,11 @@ cli = OptionParser.new do |options|
   options.banner = "Usage: backup [options]"
   options.define '-n', '--name=CONTAINER_NAME', 'Specify a LXD container name to snapshot and backup'
 
-  options.define '-r', '--remote=REMOTE', 'Specify a LXD remote, defaults to production'
+  options.define '-r', '--remote=REMOTE', 'Specify a LXD remote, defaults to \'production\''
 
-  options.define '-s', '--silent', 'surpress output'
+  options.define '-s', '--silent', 'Surpress output'
+
+  options.define '-v', '--verbose', 'Enable debug mode'
 
   options.on('-h', '--help', 'Displays Help') do
     puts options
@@ -27,6 +29,8 @@ end
 cli.parse!(into: config)
 
 exit if config[:name] == nil && config[:silent]
+
+@log.level = Logger::DEBUG if config[:verbose]
 
 if config[:name] == nil
   print 'Enter LXC Container Name: '
@@ -49,17 +53,26 @@ def system_p command, fatal=true
 
   stdout, stdeerr, result = Open3.capture3(command)
 
-  if !result
+  success = (result.exitstatus == 0)
+
+  if !success
     if !fatal
-      logger.warn("Error executing command #{command}")
-      logger.warn("#{stdout}")
-      logger.warn("#{stdeerr}")
+      @log.warn("Error executing command '#{command}'")
+      @log.warn("#{stdout}") if stdout.strip != ""
+      @log.warn("#{result}")
+      @log.warn("#{stdeerr}") if stdeerr.strip != ""
     else
-      logger.error("Error executing command #{command}")
-      logger.error("#{stdout}")
-      logger.error("#{stdeerr}")
+      @log.error("Error executing command '#{command}'")
+      @log.error("#{stdout}") if stdout.strip != ""
+      @log.error("#{result}")
+      @log.error("#{stdeerr}") if stdeerr.strip != ""
       abort "Command failed"
     end
+  else
+    @log.debug("Successfuly executed '#{command}'")
+    @log.debug("#{stdout}") if stdout.strip != ""
+    @log.debug("#{result}")
+    @log.debug("#{stdeerr}") if stdeerr.strip != ""
   end
   result
 end
@@ -68,9 +81,10 @@ end
 # Title
 
 puts "Copying LXD container #{CONTAINER_NAME} on #{LXC_REMOTE} to local.\n" unless config[:silent]
+puts "With options: #{config}\n" unless config[:silent]
 puts unless config[:silent]
 
-logger.info("Backing up #{LXC_REMOTE}:#{CONTAINER_NAME}")
+@log.info("Backing up #{LXC_REMOTE}:#{CONTAINER_NAME}")
 
 # Process
 begin
@@ -100,11 +114,11 @@ begin
   # Step 8: Delete backup snapshot
   system_p "lxc delete #{BACKUP_CONTAINER_NAME}", false
 
-  logger.info('Completed Successfully')
+  @log.info('Completed Successfully')
 
 rescue Exception => e
-  logger.error("Error backing up #{LXC_REMOTE}:#{CONTAINER_NAME}")
-  logger.error "Uncaught #{e} exception while backing up. #{e.message}"
-  logger.error "Stack Trace: #{e.backtrace.map {|l| "  #{l}\n"}.join}"
+  @log.error("Error backing up #{LXC_REMOTE}:#{CONTAINER_NAME}")
+  @log.error "Uncaught #{e} exception while backing up. #{e.message}"
+  @log.error "Stack Trace: #{e.backtrace.map {|l| "  #{l}\n"}.join}"
   raise e
 end
