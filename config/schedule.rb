@@ -9,6 +9,7 @@ every 1.days do
   command "/root/lxc-backup/backup.rb -n app1 --silent"
   command "/root/lxc-backup/backup.rb -n app2 --silent"
   command "/root/lxc-backup/backup.rb -n app3 --silent"
+  command "/root/lxc-backup/backup.rb -n app4 --silent"
   command "/root/lxc-backup/backup.rb -n database --silent"
   command "/root/lxc-backup/backup.rb -n loadbalancer --silent"
   command "/root/lxc-backup/backup.rb -n web1 --silent"
