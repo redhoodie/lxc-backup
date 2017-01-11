@@ -113,7 +113,7 @@ if @config[:poll]
     result.each {|k,v| fails[k] = (fails[k] || 0) + 1 if v.nil? || v == ""}
 
     system 'clear'
-    puts tableize results.collect{|k,v| k + ":\t" + (fails[k] > 5 ? : 'done' : v)}.sort.join("\n")
+    puts tableize results.collect{|k,v| k + ":\t" + (fails[k] > 5 ? 'done' : v)}.sort.join("\n")
   end
 
   abort("No active copy detected.") if last_result.nil?
