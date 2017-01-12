@@ -1,7 +1,6 @@
 #! /usr/local/rbenv/shims/ruby
 
 require 'optparse'
-require 'pry'
 
 # TODO: Rewrite with a process listening to `lxc monitor` and updating variables internally.
 

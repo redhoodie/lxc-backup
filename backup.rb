@@ -3,7 +3,6 @@
 require 'optparse'
 require 'open3'
 require 'logger'
-require 'pry'
 
 @log = Logger.new('/var/log/lxc-backup.log', 3, 1024000)
 @log.level = Logger::INFO
