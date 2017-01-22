@@ -97,7 +97,10 @@ begin
   system_p "lxc delete #{LXC_REMOTE}:#{CONTAINER_NAME}/#{LXC_SNAPSHOT_NAME}", false
 
   # Step 4: Create remote snapshot
-  system_p "lxc snapshot --stateful #{LXC_REMOTE}:#{CONTAINER_NAME} #{LXC_SNAPSHOT_NAME}"
+  unless system_p "lxc snapshot --stateful #{LXC_REMOTE}:#{CONTAINER_NAME} #{LXC_SNAPSHOT_NAME}"
+    system_p "lxc snapshot #{LXC_REMOTE}:#{CONTAINER_NAME} #{LXC_SNAPSHOT_NAME}"
+  end
+
 
   # Step 5: Delete any local temp snapshot
   system_p "lxc delete #{TEMP_CONTAINER_NAME}", false
