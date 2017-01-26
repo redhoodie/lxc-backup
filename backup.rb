@@ -73,7 +73,7 @@ def system_p command, fatal=true
     @log.debug("#{result}")
     @log.debug("#{stdeerr}") if stdeerr.strip != ""
   end
-  result
+  success
 end
 
 
@@ -97,10 +97,9 @@ begin
   system_p "lxc delete #{LXC_REMOTE}:#{CONTAINER_NAME}/#{LXC_SNAPSHOT_NAME}", false
 
   # Step 4: Create remote snapshot
-  unless system_p "lxc snapshot --stateful #{LXC_REMOTE}:#{CONTAINER_NAME} #{LXC_SNAPSHOT_NAME}"
+  unless system_p "lxc snapshot --stateful #{LXC_REMOTE}:#{CONTAINER_NAME} #{LXC_SNAPSHOT_NAME}", false
     system_p "lxc snapshot #{LXC_REMOTE}:#{CONTAINER_NAME} #{LXC_SNAPSHOT_NAME}"
   end
-
 
   # Step 5: Delete any local temp snapshot
   system_p "lxc delete #{TEMP_CONTAINER_NAME}", false
