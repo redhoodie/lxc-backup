@@ -1,4 +1,4 @@
-#! /usr/local/rbenv/shims/ruby
+#! /usr/bin/ruby
 
 require 'optparse'
 require 'open3'
