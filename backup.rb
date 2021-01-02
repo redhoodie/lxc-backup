@@ -65,7 +65,7 @@ def system_p command, fatal=true
       @log.error("#{stdout}") if stdout.strip != ""
       @log.error("#{result}")
       @log.error("#{stdeerr}") if stdeerr.strip != ""
-      abort "Command failed"
+      abort "Command failed: '#{command}'"
     end
   else
     @log.debug("Successfuly executed '#{command}'")
