@@ -108,12 +108,15 @@ begin
   unless system_p("lxc copy #{LXC_REMOTE}:#{CONTAINER_NAME}/#{LXC_SNAPSHOT_NAME} #{TEMP_CONTAINER_NAME}", false)
     system_p "lxc move #{BACKUP_CONTAINER_NAME} #{CONTAINER_NAME}"
   end
-  
+
   # Step 7: Move local temp snapshot into place
   system_p "lxc move #{TEMP_CONTAINER_NAME} #{CONTAINER_NAME}"
 
   # Step 8: Delete backup snapshot
   system_p "lxc delete #{BACKUP_CONTAINER_NAME}", false
+
+  # Step 9: Stop the container if its running
+  system_p "lxc stop #{CONTAINER_NAME}", false
 
   @log.info("Backup #{LXC_REMOTE}:#{CONTAINER_NAME} Completed Successfully")
 
